@@ -5,7 +5,7 @@ EasyBind leverages lambdas to reduce boilerplate when creating custom bindings.
 
 It also provides a type-safe alternative to `Bindings.select*` methods.
 
-This work is inspired by Anton Nashatyrev's [feature request](https://javafx-jira.kenai.com/browse/RT-35923), which is planned for JavaFX 9. Until then, you have EasyBind.
+This work is inspired by Anton Nashatyrev's [feature request](https://javafx-jira.kenai.com/browse/RT-35923), which is planned for JavaFX 9. Until then, you can use EasyBind.
 
 
 API
@@ -17,14 +17,14 @@ Creates a binding whose value is a mapping of some observable value.
 
 ```java
 ObservableStringValue str = ...;
-Binding<Integer> len = EasyBind.map(str, String::length);
+Binding<Integer> strLen = EasyBind.map(str, String::length);
 ```
 
 Compare to plain JavaFX:
 
 ```java
 ObservableStringValue str = ...;
-IntegerBinding len = Bindings.createIntegerBinding(() -> str.get().length(), str);
+IntegerBinding strLen = Bindings.createIntegerBinding(() -> str.get().length(), str);
 ```
 
 The difference is subtle, but important: In the latter version, `str` is repeated twice &mdash; once in the function to compute binding's value and once as binding's dependency. This opens the possibility that a wrong dependency is specified by mistake.
