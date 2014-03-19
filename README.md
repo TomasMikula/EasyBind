@@ -110,3 +110,8 @@ libraryDependencies += "org.fxmisc.easybind" % "easybind" % "1.0.0-SNAPSHOT"
 
 [Download](https://oss.sonatype.org/content/repositories/snapshots/org/fxmisc/easybind/easybind/1.0.0-SNAPSHOT/) the latest JAR file and place it on your classpath.
 
+
+Links
+-----
+
+[Javadoc](http://www.fxmisc.org/easybind/javadoc/overview-summary.html)
