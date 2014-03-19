@@ -2,7 +2,6 @@ package org.fxmisc.easybind;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import javafx.beans.binding.Binding;
 import javafx.beans.binding.ObjectBinding;
@@ -33,22 +32,6 @@ public class EasyBind {
     @FunctionalInterface
     public interface HexaFunction<A, B, C, D, E, F, R> {
         R apply(A a, B b, C c, D d, E e, F f);
-    }
-
-    /**
-     * Returns a binding that recomputes its value using the given function.
-     * The returned binding is invalidated only by invoking its
-     * {@link ObjectBinding#invalidate()} method.
-     * @param computeValue
-     * @return
-     */
-    public static <T> Binding<T> supply(Supplier<T> computeValue) {
-        return new ObjectBinding<T>() {
-            @Override
-            protected T computeValue() {
-                return computeValue.get();
-            }
-        };
     }
 
     public static <T, U> Binding<U> map(
