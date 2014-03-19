@@ -3,8 +3,6 @@ package org.fxmisc.easybind;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import javafx.beans.binding.Binding;
-import javafx.beans.binding.ObjectBinding;
 import javafx.beans.value.ObservableValue;
 
 import org.fxmisc.easybind.select.SelectBuilder;
@@ -34,12 +32,10 @@ public class EasyBind {
         R apply(A a, B b, C c, D d, E e, F f);
     }
 
-    public static <T, U> Binding<U> map(
+    public static <T, U> UnbindableBinding<U> map(
             ObservableValue<T> src,
             Function<T, U> f) {
-        return new ObjectBinding<U>() {
-            { bind(src); }
-
+        return new UnbindableObjectBinding<U>(src) {
             @Override
             protected U computeValue() {
                 return f.apply(src.getValue());
@@ -47,13 +43,11 @@ public class EasyBind {
         };
     }
 
-    public static <A, B, R> Binding<R> combine(
+    public static <A, B, R> UnbindableBinding<R> combine(
             ObservableValue<A> src1,
             ObservableValue<B> src2,
             BiFunction<A, B, R> f) {
-        return new ObjectBinding<R>() {
-            { bind(src1, src2); }
-
+        return new UnbindableObjectBinding<R>(src1, src2) {
             @Override
             protected R computeValue() {
                 return f.apply(src1.getValue(), src2.getValue());
@@ -61,14 +55,12 @@ public class EasyBind {
         };
     }
 
-    public static <A, B, C, R> Binding<R> combine(
+    public static <A, B, C, R> UnbindableBinding<R> combine(
             ObservableValue<A> src1,
             ObservableValue<B> src2,
             ObservableValue<C> src3,
             TriFunction<A, B, C, R> f) {
-        return new ObjectBinding<R>() {
-            { bind(src1, src2, src3); }
-
+        return new UnbindableObjectBinding<R>(src1, src2, src3) {
             @Override
             protected R computeValue() {
                 return f.apply(
@@ -77,15 +69,13 @@ public class EasyBind {
         };
     }
 
-    public static <A, B, C, D, R> Binding<R> combine(
+    public static <A, B, C, D, R> UnbindableBinding<R> combine(
             ObservableValue<A> src1,
             ObservableValue<B> src2,
             ObservableValue<C> src3,
             ObservableValue<D> src4,
             TetraFunction<A, B, C, D, R> f) {
-        return new ObjectBinding<R>() {
-            { bind(src1, src2, src3, src4); }
-
+        return new UnbindableObjectBinding<R>(src1, src2, src3, src4) {
             @Override
             protected R computeValue() {
                 return f.apply(
@@ -95,16 +85,14 @@ public class EasyBind {
         };
     }
 
-    public static <A, B, C, D, E, R> Binding<R> combine(
+    public static <A, B, C, D, E, R> UnbindableBinding<R> combine(
             ObservableValue<A> src1,
             ObservableValue<B> src2,
             ObservableValue<C> src3,
             ObservableValue<D> src4,
             ObservableValue<E> src5,
             PentaFunction<A, B, C, D, E, R> f) {
-        return new ObjectBinding<R>() {
-            { bind(src1, src2, src3, src4, src5); }
-
+        return new UnbindableObjectBinding<R>(src1, src2, src3, src4, src5) {
             @Override
             protected R computeValue() {
                 return f.apply(
@@ -114,7 +102,7 @@ public class EasyBind {
         };
     }
 
-    public static <A, B, C, D, E, F, R> Binding<R> combine(
+    public static <A, B, C, D, E, F, R> UnbindableBinding<R> combine(
             ObservableValue<A> src1,
             ObservableValue<B> src2,
             ObservableValue<C> src3,
@@ -122,9 +110,7 @@ public class EasyBind {
             ObservableValue<E> src5,
             ObservableValue<F> src6,
             HexaFunction<A, B, C, D, E, F, R> f) {
-        return new ObjectBinding<R>() {
-            { bind(src1, src2, src3, src4, src5, src6); }
-
+        return new UnbindableObjectBinding<R>(src1, src2, src3, src4, src5, src6) {
             @Override
             protected R computeValue() {
                 return f.apply(
