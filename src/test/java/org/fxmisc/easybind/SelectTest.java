@@ -1,6 +1,7 @@
 package org.fxmisc.easybind;
 
 import static org.junit.Assert.*;
+import javafx.beans.binding.Binding;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -33,7 +34,7 @@ public class SelectTest {
     @Test
     public void test() {
         Property<A> root = new SimpleObjectProperty<>();
-        UnbindableBinding<String> selection = EasyBind.select(root)
+        Binding<String> selection = EasyBind.select(root)
                 .select(a -> a.b)
                 .selectObject(b -> b.s);
         Counter counter = new Counter();
@@ -80,8 +81,8 @@ public class SelectTest {
         assertEquals(1, counter.get());
         counter.reset();
 
-        // test that no more invalidations arrive after unbind
-        selection.unbind();
+        // test that no more invalidations arrive after dispose
+        selection.dispose();
         b1.s.setValue("foo");
         assertEquals(0, counter.get());
         b2.s.setValue("bar");
@@ -93,8 +94,8 @@ public class SelectTest {
         root.setValue(new A());
         assertEquals(0, counter.get());
 
-        // test that a second call to unbind does not throw
-        selection.unbind();
+        // test that a second call to dispose does not throw
+        selection.dispose();
     }
 
 }

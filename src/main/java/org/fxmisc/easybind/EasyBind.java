@@ -3,8 +3,12 @@ package org.fxmisc.easybind;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.binding.Binding;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
+import org.fxmisc.easybind.monadic.MonadicObservableValue;
 import org.fxmisc.easybind.select.SelectBuilder;
 
 /**
@@ -32,10 +36,50 @@ public class EasyBind {
         R apply(A a, B b, C c, D d, E e, F f);
     }
 
-    public static <T, U> UnbindableBinding<U> map(
+    /**
+     * Creates a thin wrapper around an observable value to make it monadic.
+     * @param o ObservableValue to wrap
+     * @return {@code o} if {@code o} is already monadic, or a thin monadic
+     * wrapper around {@code o} otherwise.
+     */
+    public static <T> MonadicObservableValue<T> monadic(ObservableValue<T> o) {
+        if(o instanceof MonadicObservableValue) {
+            return (MonadicObservableValue<T>) o;
+        } else {
+            return new MonadicObservableValue<T>() {
+
+                @Override
+                public T getValue() {
+                    return o.getValue();
+                }
+
+                @Override
+                public void addListener(ChangeListener<? super T> listener) {
+                    o.addListener(listener);
+                }
+
+                @Override
+                public void removeListener(ChangeListener<? super T> listener) {
+                    o.removeListener(listener);
+                }
+
+                @Override
+                public void addListener(InvalidationListener listener) {
+                    o.addListener(listener);
+                }
+
+                @Override
+                public void removeListener(InvalidationListener listener) {
+                    o.removeListener(listener);
+                }
+            };
+        }
+    }
+
+    public static <T, U> Binding<U> map(
             ObservableValue<T> src,
             Function<T, U> f) {
-        return new UnbindableObjectBinding<U>(src) {
+        return new PreboundBinding<U>(src) {
             @Override
             protected U computeValue() {
                 return f.apply(src.getValue());
@@ -43,11 +87,11 @@ public class EasyBind {
         };
     }
 
-    public static <A, B, R> UnbindableBinding<R> combine(
+    public static <A, B, R> Binding<R> combine(
             ObservableValue<A> src1,
             ObservableValue<B> src2,
             BiFunction<A, B, R> f) {
-        return new UnbindableObjectBinding<R>(src1, src2) {
+        return new PreboundBinding<R>(src1, src2) {
             @Override
             protected R computeValue() {
                 return f.apply(src1.getValue(), src2.getValue());
@@ -55,12 +99,12 @@ public class EasyBind {
         };
     }
 
-    public static <A, B, C, R> UnbindableBinding<R> combine(
+    public static <A, B, C, R> Binding<R> combine(
             ObservableValue<A> src1,
             ObservableValue<B> src2,
             ObservableValue<C> src3,
             TriFunction<A, B, C, R> f) {
-        return new UnbindableObjectBinding<R>(src1, src2, src3) {
+        return new PreboundBinding<R>(src1, src2, src3) {
             @Override
             protected R computeValue() {
                 return f.apply(
@@ -69,13 +113,13 @@ public class EasyBind {
         };
     }
 
-    public static <A, B, C, D, R> UnbindableBinding<R> combine(
+    public static <A, B, C, D, R> Binding<R> combine(
             ObservableValue<A> src1,
             ObservableValue<B> src2,
             ObservableValue<C> src3,
             ObservableValue<D> src4,
             TetraFunction<A, B, C, D, R> f) {
-        return new UnbindableObjectBinding<R>(src1, src2, src3, src4) {
+        return new PreboundBinding<R>(src1, src2, src3, src4) {
             @Override
             protected R computeValue() {
                 return f.apply(
@@ -85,14 +129,14 @@ public class EasyBind {
         };
     }
 
-    public static <A, B, C, D, E, R> UnbindableBinding<R> combine(
+    public static <A, B, C, D, E, R> Binding<R> combine(
             ObservableValue<A> src1,
             ObservableValue<B> src2,
             ObservableValue<C> src3,
             ObservableValue<D> src4,
             ObservableValue<E> src5,
             PentaFunction<A, B, C, D, E, R> f) {
-        return new UnbindableObjectBinding<R>(src1, src2, src3, src4, src5) {
+        return new PreboundBinding<R>(src1, src2, src3, src4, src5) {
             @Override
             protected R computeValue() {
                 return f.apply(
@@ -102,7 +146,7 @@ public class EasyBind {
         };
     }
 
-    public static <A, B, C, D, E, F, R> UnbindableBinding<R> combine(
+    public static <A, B, C, D, E, F, R> Binding<R> combine(
             ObservableValue<A> src1,
             ObservableValue<B> src2,
             ObservableValue<C> src3,
@@ -110,7 +154,7 @@ public class EasyBind {
             ObservableValue<E> src5,
             ObservableValue<F> src6,
             HexaFunction<A, B, C, D, E, F, R> f) {
-        return new UnbindableObjectBinding<R>(src1, src2, src3, src4, src5, src6) {
+        return new PreboundBinding<R>(src1, src2, src3, src4, src5, src6) {
             @Override
             protected R computeValue() {
                 return f.apply(

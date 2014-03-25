@@ -4,9 +4,9 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.value.ObservableValue;
 
-import org.fxmisc.easybind.UnbindableBinding;
+import org.fxmisc.easybind.monadic.MonadicBinding;
 
-class SelectObjectBinding<T, U> extends ObjectBinding<U> implements UnbindableBinding<U> {
+class SelectObjectBinding<T, U> extends ObjectBinding<U> implements MonadicBinding<U> {
     private final ObservableValue<T> root;
     private final NestedSelectionElement<T, U> nestedSelection;
     private final InvalidationListener rootInvalidationListener;
@@ -36,7 +36,7 @@ class SelectObjectBinding<T, U> extends ObjectBinding<U> implements UnbindableBi
     }
 
     @Override
-    public void unbind() {
+    public void dispose() {
         root.removeListener(rootInvalidationListener);
         nestedSelection.disconnect();
     }

@@ -2,7 +2,7 @@ package org.fxmisc.easybind.select;
 
 import javafx.beans.value.ObservableValue;
 
-import org.fxmisc.easybind.UnbindableBinding;
+import org.fxmisc.easybind.monadic.MonadicBinding;
 
 class RootSelectedBuilder<T> implements ParentSelectedBuilder<T> {
     private final ObservableValue<T> root;
@@ -12,7 +12,7 @@ class RootSelectedBuilder<T> implements ParentSelectedBuilder<T> {
     }
 
     @Override
-    public <U> UnbindableBinding<U> create(
+    public <U> MonadicBinding<U> create(
             NestedSelectionElementFactory<T, U> nestedSelectionFactory) {
         return new SelectObjectBinding<T, U>(root, nestedSelectionFactory);
     }

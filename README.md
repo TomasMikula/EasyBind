@@ -1,15 +1,11 @@
 EasyBind
 ========
 
-EasyBind leverages lambdas to reduce boilerplate when creating custom bindings.
-
-It also provides a type-safe alternative to `Bindings.select*` methods.
-
-This work is inspired by Anton Nashatyrev's [feature request](https://javafx-jira.kenai.com/browse/RT-35923), which is planned for JavaFX 9. Until then, you can use EasyBind.
+EasyBind leverages lambdas to reduce boilerplate when creating custom bindings, provides a type-safe alternative to `Bindings.select*` methods (inspired by Anton Nashatyrev's [feature request](https://javafx-jira.kenai.com/browse/RT-35923), planned for JavaFX 9) and adds _monadic_ operations to `ObservableValue`.
 
 
-API
----
+Binding factory methods
+-----------------------
 
 ### map
 
@@ -70,6 +66,29 @@ BooleanBinding bb = Bindings.selectBoolean(control.sceneProperty(), "window", "i
 ```
 
 The latter version is not type-safe, which means it may cause runtime errors.
+
+
+Monadic observable values
+-------------------------
+
+[MonadicObservableValue](http://www.fxmisc.org/easybind/javadoc/org/fxmisc/easybind/monadic/MonadicObservableValue.html) interface adds monadic operations to `ObservableValue`.
+
+```java
+interface MonadicObservableValue<T> extends ObservableValue<T> {
+    boolean isPresent();
+    boolean isEmpty();
+    void ifPresent(Consumer<? super T> f);
+    T getOrThrow();
+    T getOrElse(T other);
+    MonadicBinding<T> orElse(T other);
+    MonadicBinding<T> orElse(ObservableValue<T> other);
+    MonadicBinding<T> filter(Predicate<? super T> p);
+    <U> MonadicBinding<U> map(Function<? super T, ? extends U> f);
+    <U> MonadicBinding<U> flatMap(Function<? super T, ObservableValue<U>> f);
+}
+```
+
+Read more about monadic operations in [this blog post](http://tomasmikula.github.io/blog/2014/03/26/monadic-operations-on-observablevalue.html).
 
 
 Use EasyBind in your project

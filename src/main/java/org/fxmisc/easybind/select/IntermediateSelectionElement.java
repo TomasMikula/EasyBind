@@ -1,11 +1,13 @@
 package org.fxmisc.easybind.select;
 
+import java.util.function.Function;
+
 import javafx.beans.InvalidationListener;
 import javafx.beans.value.ObservableValue;
 
 class IntermediateSelectionElement<T, U, V> implements NestedSelectionElement<T, V> {
     private final InvalidationListener observableInvalidationListener = obs -> observableInvalidated();
-    private final Selector<T, U> selector;
+    private final Function<? super T, ObservableValue<U>> selector;
     private final NestedSelectionElement<U, V> nested;
     private final Runnable onInvalidation;
 
@@ -13,7 +15,7 @@ class IntermediateSelectionElement<T, U, V> implements NestedSelectionElement<T,
 
     public IntermediateSelectionElement(
             Runnable onInvalidation,
-            Selector<T, U> selector,
+            Function<? super T, ObservableValue<U>> selector,
             NestedSelectionElementFactory<U, V> nestedSelectionFactory) {
         this.onInvalidation = onInvalidation;
         this.selector = selector;
@@ -26,7 +28,7 @@ class IntermediateSelectionElement<T, U, V> implements NestedSelectionElement<T,
             throw new IllegalStateException("Already connected");
         }
 
-        observable = selector.select(baseVal);
+        observable = selector.apply(baseVal);
         observable.addListener(observableInvalidationListener);
     }
 

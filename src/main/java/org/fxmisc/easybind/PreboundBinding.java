@@ -3,17 +3,16 @@ package org.fxmisc.easybind;
 import javafx.beans.Observable;
 import javafx.beans.binding.ObjectBinding;
 
-abstract class UnbindableObjectBinding<T> extends ObjectBinding<T> implements
-        UnbindableBinding<T> {
+abstract class PreboundBinding<T> extends ObjectBinding<T> {
     private final Observable[] dependencies;
 
-    public UnbindableObjectBinding(Observable... dependencies) {
+    public PreboundBinding(Observable... dependencies) {
         this.dependencies = dependencies;
         bind(dependencies);
     }
 
     @Override
-    public void unbind() {
+    public void dispose() {
         unbind(dependencies);
     }
 }
