@@ -85,6 +85,7 @@ interface MonadicObservableValue<T> extends ObservableValue<T> {
     MonadicBinding<T> filter(Predicate<? super T> p);
     <U> MonadicBinding<U> map(Function<? super T, ? extends U> f);
     <U> MonadicBinding<U> flatMap(Function<? super T, ObservableValue<U>> f);
+    <U> SelectBuilder<U> select(Function<? super T, ObservableValue<U>> f);
 }
 ```
 
