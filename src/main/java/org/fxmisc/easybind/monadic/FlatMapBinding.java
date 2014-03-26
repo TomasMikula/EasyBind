@@ -4,22 +4,31 @@ import java.util.function.Function;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.WeakInvalidationListener;
+import javafx.beans.binding.ObjectBinding;
 import javafx.beans.value.ObservableValue;
 
-import org.fxmisc.easybind.PreboundBinding;
-
-class FlatMapBinding<T, U> extends PreboundBinding<U> {
+class FlatMapBinding<T, U> extends ObjectBinding<U> implements MonadicBinding<U> {
     private final ObservableValue<T> src;
     private final Function<? super T, ObservableValue<U>> mapper;
-    private final InvalidationListener mappedListener =
-            new WeakInvalidationListener(obs -> mappedInvalidated());
+
+    private final InvalidationListener mappedListener = obs -> mappedInvalidated();
+    private final InvalidationListener weakMappedListener = new WeakInvalidationListener(mappedListener);
+
+    private final InvalidationListener srcListener = obs -> srcInvalidated();
+    private final InvalidationListener weakSrcListener = new WeakInvalidationListener(srcListener);
 
     private ObservableValue<U> mapped = null;
 
     public FlatMapBinding(ObservableValue<T> src, Function<? super T, ObservableValue<U>> f) {
         this.src = src;
         this.mapper = f;
-        src.addListener(new WeakInvalidationListener(obs -> srcInvalidated()));
+        src.addListener(weakSrcListener);
+    }
+
+    @Override
+    public void dispose() {
+        src.removeListener(weakSrcListener);
+        disposeMapped();
     }
 
     @Override
@@ -30,7 +39,7 @@ class FlatMapBinding<T, U> extends PreboundBinding<U> {
                 return null;
             } else {
                 mapped = mapper.apply(baseVal);
-                mapped.addListener(mappedListener);
+                mapped.addListener(weakMappedListener);
             }
         }
         return mapped.getValue();
@@ -40,11 +49,15 @@ class FlatMapBinding<T, U> extends PreboundBinding<U> {
         invalidate();
     }
 
-    private void srcInvalidated() {
+    private void disposeMapped() {
         if(mapped != null) {
-            mapped.removeListener(mappedListener);
+            mapped.removeListener(weakMappedListener);
             mapped = null;
         }
+    }
+
+    private void srcInvalidated() {
+        disposeMapped();
         invalidate();
     }
 }

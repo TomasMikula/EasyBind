@@ -1,12 +1,15 @@
 package org.fxmisc.easybind.monadic;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.WeakInvalidationListener;
+import javafx.beans.binding.ObjectBinding;
 import javafx.beans.value.ObservableValue;
 
-import org.fxmisc.easybind.PreboundBinding;
-
-class FirstNonNullBinding<T> extends PreboundBinding<T> {
+class FirstNonNullBinding<T> extends ObjectBinding<T> implements MonadicBinding<T> {
     private final ObservableValue<? extends T>[] chain;
+    private final InvalidationListener listener = obs -> srcInvalidated(obs);
+    private final InvalidationListener weakListener = new WeakInvalidationListener(listener);
 
     private int startAt = 0;
 
@@ -14,8 +17,14 @@ class FirstNonNullBinding<T> extends PreboundBinding<T> {
     public FirstNonNullBinding(ObservableValue<? extends T>... chain) {
         this.chain = chain;
         for(int i = 0; i < chain.length; ++i) {
-            int index = i;
-            chain[i].addListener(new WeakInvalidationListener(obs -> invalidated(index)));
+            chain[i].addListener(weakListener);
+        }
+    }
+
+    @Override
+    public void dispose() {
+        for(int i = 0; i < chain.length; ++i) {
+            chain[i].removeListener(weakListener);
         }
     }
 
@@ -32,7 +41,16 @@ class FirstNonNullBinding<T> extends PreboundBinding<T> {
         return null;
     }
 
-    private void invalidated(int index) {
+    private void srcInvalidated(Observable src) {
+        for(int i = 0; i < chain.length; ++i) {
+            if(chain[i] == src) {
+                srcInvalidated(i);
+                break;
+            }
+        }
+    }
+
+    private void srcInvalidated(int index) {
         if(index <= startAt) {
             startAt = index;
             invalidate();

@@ -24,6 +24,9 @@ public class MonadicTest {
         Property<A> base = new SimpleObjectProperty<>();
         MonadicBinding<String> select = EasyBind.monadic(base).flatMap(a -> a.b).flatMap(b -> b.s);
 
+        Counter invalidationCounter = new Counter();
+        select.addListener(obs -> invalidationCounter.inc());
+
         assertNull(select.getValue());
 
         A a = new A();
@@ -31,16 +34,28 @@ public class MonadicTest {
         b.s.setValue("s1");
         a.b.setValue(b);
         base.setValue(a);
+        assertEquals(1, invalidationCounter.getAndReset());
         assertEquals("s1", select.getValue());
 
         a.b.setValue(new B());
+        assertEquals(1, invalidationCounter.getAndReset());
         assertNull(select.getValue());
 
         b.s.setValue("s2");
+        assertEquals(0, invalidationCounter.getAndReset());
         assertNull(select.getValue());
 
         a.b.getValue().s.setValue("x");
+        assertEquals(1, invalidationCounter.getAndReset());
         assertEquals("x", select.getValue());
+
+        a.b.setValue(null);
+        assertEquals(1, invalidationCounter.getAndReset());
+        assertNull(select.getValue());
+
+        a.b.setValue(b);
+        assertEquals(1, invalidationCounter.getAndReset());
+        assertEquals("s2", select.getValue());
     }
 
     @Test
