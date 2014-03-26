@@ -3,9 +3,7 @@ package org.fxmisc.easybind;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Binding;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 import org.fxmisc.easybind.monadic.MonadicObservableValue;
@@ -46,33 +44,7 @@ public class EasyBind {
         if(o instanceof MonadicObservableValue) {
             return (MonadicObservableValue<T>) o;
         } else {
-            return new MonadicObservableValue<T>() {
-
-                @Override
-                public T getValue() {
-                    return o.getValue();
-                }
-
-                @Override
-                public void addListener(ChangeListener<? super T> listener) {
-                    o.addListener(listener);
-                }
-
-                @Override
-                public void removeListener(ChangeListener<? super T> listener) {
-                    o.removeListener(listener);
-                }
-
-                @Override
-                public void addListener(InvalidationListener listener) {
-                    o.addListener(listener);
-                }
-
-                @Override
-                public void removeListener(InvalidationListener listener) {
-                    o.removeListener(listener);
-                }
-            };
+            return new MonadicWrapper<>(o);
         }
     }
 
