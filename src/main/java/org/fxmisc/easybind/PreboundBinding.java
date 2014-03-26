@@ -3,7 +3,14 @@ package org.fxmisc.easybind;
 import javafx.beans.Observable;
 import javafx.beans.binding.ObjectBinding;
 
-abstract class PreboundBinding<T> extends ObjectBinding<T> {
+import org.fxmisc.easybind.monadic.MonadicBinding;
+
+/**
+ * Object binding that binds to its dependencies on creation
+ * and unbinds from them on dispose.
+ * @param <T>
+ */
+public abstract class PreboundBinding<T> extends ObjectBinding<T> implements MonadicBinding<T> {
     private final Observable[] dependencies;
 
     public PreboundBinding(Observable... dependencies) {

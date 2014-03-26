@@ -6,7 +6,9 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.WeakInvalidationListener;
 import javafx.beans.value.ObservableValue;
 
-class FlatMapBinding<T, U> extends MonadicObjectBinding<U> {
+import org.fxmisc.easybind.PreboundBinding;
+
+class FlatMapBinding<T, U> extends PreboundBinding<U> {
     private final ObservableValue<T> src;
     private final Function<? super T, ObservableValue<U>> mapper;
     private final InvalidationListener mappedListener =

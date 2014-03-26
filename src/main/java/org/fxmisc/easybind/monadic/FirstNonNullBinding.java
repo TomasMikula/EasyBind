@@ -3,7 +3,9 @@ package org.fxmisc.easybind.monadic;
 import javafx.beans.WeakInvalidationListener;
 import javafx.beans.value.ObservableValue;
 
-class FirstNonNullBinding<T> extends MonadicObjectBinding<T> {
+import org.fxmisc.easybind.PreboundBinding;
+
+class FirstNonNullBinding<T> extends PreboundBinding<T> {
     private final ObservableValue<? extends T>[] chain;
 
     private int startAt = 0;

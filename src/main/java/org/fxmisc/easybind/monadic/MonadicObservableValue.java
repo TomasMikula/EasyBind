@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 
 import javafx.beans.value.ObservableValue;
 
+import org.fxmisc.easybind.PreboundBinding;
 import org.fxmisc.easybind.select.SelectBuilder;
 
 /**
@@ -77,7 +78,7 @@ public interface MonadicObservableValue<T> extends ObservableValue<T> {
      * ObservableValue, or {@code other} when this ObservableValue is empty.
      */
     default MonadicBinding<T> orElse(T other) {
-        return new MonadicObjectBinding<T>(this) {
+        return new PreboundBinding<T>(this) {
             @Override
             protected T computeValue() {
                 T val = MonadicObservableValue.this.getValue();
@@ -103,7 +104,7 @@ public interface MonadicObservableValue<T> extends ObservableValue<T> {
      * @param p
      */
     default MonadicBinding<T> filter(Predicate<? super T> p) {
-        return new MonadicObjectBinding<T>(this) {
+        return new PreboundBinding<T>(this) {
             @Override
             protected T computeValue() {
                 T val = MonadicObservableValue.this.getValue();
@@ -118,7 +119,7 @@ public interface MonadicObservableValue<T> extends ObservableValue<T> {
      * @param f function to map the value held by this ObservableValue.
      */
     default <U> MonadicBinding<U> map(Function<? super T, ? extends U> f) {
-        return new MonadicObjectBinding<U>(this) {
+        return new PreboundBinding<U>(this) {
             @Override
             protected U computeValue() {
                 T baseVal = MonadicObservableValue.this.getValue();
