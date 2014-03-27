@@ -157,7 +157,7 @@ public interface MonadicObservableValue<T> extends ObservableValue<T> {
      *
      * <pre>
      * {@code
-     * Subscription s = observable.addListener(obs -> doSomething());
+     * Subscription s = observable.subscribe(obs -> doSomething());
      *
      * // later
      * s.unsubscribe();
