@@ -5,6 +5,7 @@ import java.util.function.Function;
 
 import javafx.beans.binding.Binding;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 
 import org.fxmisc.easybind.monadic.MonadicObservableValue;
 import org.fxmisc.easybind.select.SelectBuilder;
@@ -62,6 +63,12 @@ public class EasyBind {
                 return f.apply(src.getValue());
             }
         };
+    }
+
+    public static <T, U> ObservableList<U> map(
+            ObservableList<? extends T> sourceList,
+            Function<? super T, ? extends U> f) {
+        return new MappedList<>(sourceList, f);
     }
 
     public static <A, B, R> Binding<R> combine(
