@@ -44,7 +44,12 @@ public class EasyBind {
         if(o instanceof MonadicObservableValue) {
             return (MonadicObservableValue<T>) o;
         } else {
-            return new MonadicWrapper<>(o);
+            return new PreboundBinding<T>(o) {
+                @Override
+                protected T computeValue() {
+                    return o.getValue();
+                }
+            };
         }
     }
 
