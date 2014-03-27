@@ -5,9 +5,12 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 import org.fxmisc.easybind.PreboundBinding;
+import org.fxmisc.easybind.Subscription;
 import org.fxmisc.easybind.select.SelectBuilder;
 
 /**
@@ -146,5 +149,46 @@ public interface MonadicObservableValue<T> extends ObservableValue<T> {
      */
     default <U> SelectBuilder<U> select(Function<? super T, ObservableValue<U>> selector) {
         return SelectBuilder.startAt(this).select(selector);
+    }
+
+    /**
+     * Adds an invalidation listener and returns a Subscription that can be
+     * used to remove that listener.
+     *
+     * <pre>
+     * {@code
+     * Subscription s = observable.addListener(obs -> doSomething());
+     *
+     * // later
+     * s.unsubscribe();
+     * }</pre>
+     *
+     * is equivalent to
+     *
+     * <pre>
+     * {@code
+     * InvalidationListener l = obs -> doSomething();
+     * observable.addListener(l);
+     *
+     * // later
+     * observable.removeListener();
+     * }</pre>
+     *
+     * @param listener
+     */
+    default Subscription subscribe(InvalidationListener listener) {
+        addListener(listener);
+        return () -> removeListener(listener);
+    }
+
+    /**
+     * Adds a change listener and returns a Subscription that can be
+     * used to remove that listener. See the example at
+     * {@link #subscribe(InvalidationListener)}.
+     * @param listener
+     */
+    default Subscription subscribe(ChangeListener<? super T> listener) {
+        addListener(listener);
+        return () -> removeListener(listener);
     }
 }
