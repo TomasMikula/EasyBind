@@ -121,6 +121,9 @@ ObservableList<ObservableValue<Boolean>> individualTabsSaved =
 ObservableValue<Boolean> allTabsSaved = EasyBind.combine(
         individualTabsSaved,
         stream -> stream.allMatch(saved -> saved));
+
+Button saveAllButton = new Button(...);
+saveAllButton.disableProperty().bind(allTabsSaved);
 ```
 
 
