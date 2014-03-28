@@ -2,11 +2,12 @@ package org.fxmisc.easybind;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
-import javafx.beans.binding.Binding;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 
+import org.fxmisc.easybind.monadic.MonadicBinding;
 import org.fxmisc.easybind.monadic.MonadicObservableValue;
 import org.fxmisc.easybind.select.SelectBuilder;
 
@@ -54,7 +55,7 @@ public class EasyBind {
         }
     }
 
-    public static <T, U> Binding<U> map(
+    public static <T, U> MonadicBinding<U> map(
             ObservableValue<T> src,
             Function<T, U> f) {
         return new PreboundBinding<U>(src) {
@@ -71,7 +72,7 @@ public class EasyBind {
         return new MappedList<>(sourceList, f);
     }
 
-    public static <A, B, R> Binding<R> combine(
+    public static <A, B, R> MonadicBinding<R> combine(
             ObservableValue<A> src1,
             ObservableValue<B> src2,
             BiFunction<A, B, R> f) {
@@ -83,7 +84,7 @@ public class EasyBind {
         };
     }
 
-    public static <A, B, C, R> Binding<R> combine(
+    public static <A, B, C, R> MonadicBinding<R> combine(
             ObservableValue<A> src1,
             ObservableValue<B> src2,
             ObservableValue<C> src3,
@@ -97,7 +98,7 @@ public class EasyBind {
         };
     }
 
-    public static <A, B, C, D, R> Binding<R> combine(
+    public static <A, B, C, D, R> MonadicBinding<R> combine(
             ObservableValue<A> src1,
             ObservableValue<B> src2,
             ObservableValue<C> src3,
@@ -113,7 +114,7 @@ public class EasyBind {
         };
     }
 
-    public static <A, B, C, D, E, R> Binding<R> combine(
+    public static <A, B, C, D, E, R> MonadicBinding<R> combine(
             ObservableValue<A> src1,
             ObservableValue<B> src2,
             ObservableValue<C> src3,
@@ -130,7 +131,7 @@ public class EasyBind {
         };
     }
 
-    public static <A, B, C, D, E, F, R> Binding<R> combine(
+    public static <A, B, C, D, E, F, R> MonadicBinding<R> combine(
             ObservableValue<A> src1,
             ObservableValue<B> src2,
             ObservableValue<C> src3,
@@ -146,6 +147,12 @@ public class EasyBind {
                         src4.getValue(), src5.getValue(), src6.getValue());
             }
         };
+    }
+
+    public static <T, R> MonadicBinding<R> combine(
+            ObservableList<? extends ObservableValue<? extends T>> list,
+            Function<? super Stream<T>, ? extends R> f) {
+        return new ListCombinationBinding<>(list, f);
     }
 
     public static <T> SelectBuilder<T> select(ObservableValue<T> selectionRoot) {
