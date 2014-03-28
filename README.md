@@ -68,6 +68,62 @@ BooleanBinding bb = Bindings.selectBoolean(control.sceneProperty(), "window", "i
 The latter version is not type-safe, which means it may cause runtime errors.
 
 
+### map list
+
+Returns a mapped view of an ObservableList.
+
+```java
+ObservableList<String> tabIds = EasyBind.map(tabPane.getTabs(), Tab::getId);
+```
+
+In the above example, `tabIds` is updated as tabs are added and removed from `tabPane`.
+
+An equivalent feature has been requested in [RT-35741](https://javafx-jira.kenai.com/browse/RT-35741) and is scheduled for JavaFX 9.
+
+
+### combine list
+
+Turns an _observable list_ of _observable values_ into a single observable value. The resulting observable value is updated when elements are added or removed to or from the list, as well as when element values change.
+
+```java
+Property<Integer> a = new SimpleObjectProperty<>(5);
+Property<Integer> b = new SimpleObjectProperty<>(10);
+ObservableList<Property<Integer>> list = FXCollections.observableArrayList();
+
+Binding<Integer> sum = EasyBind.combine(
+        list,
+        stream -> stream.reduce((a, b) -> a + b).orElse(0));
+
+assert sum.getValue() == 0;
+
+// sum responds to element additions
+list.add(a);
+list.add(b);
+assert sum.getValue() == 15;
+
+// sum responds to element value changes
+a.setValue(20);
+assert sum.getValue() == 30;
+
+// sum responds to element removals
+list.remove(a);
+assert sum.getValue() == 10;
+```
+
+You don't usually have an observable list of _observable_ values, but you often have an observable list of something that _contains_ an observable value. In that case, use the above `map` methods to get an observable list of observable values, as in the example below.
+
+In the following example, we assume a tab pane that contains a text editor in every tab. We want to keep the "Save All" button disabled when there are no unsaved changes in any of the editors.
+
+```java
+ObservableList<ObservableValue<Boolean>> individualTabsSaved =
+        EasyBind.map(tabPane.getTabs(), t -> ((EditorTab) t).savedProperty());
+
+ObservableValue<Boolean> allTabsSaved = EasyBind.combine(
+        individualTabsSaved,
+        stream -> stream.allMatch(saved -> saved));
+```
+
+
 Monadic observable values
 -------------------------
 
