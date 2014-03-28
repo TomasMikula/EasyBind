@@ -112,7 +112,11 @@ assert sum.getValue() == 10;
 
 You don't usually have an observable list of _observable_ values, but you often have an observable list of something that _contains_ an observable value. In that case, use the above `map` methods to get an observable list of observable values, as in the example below.
 
-In the following example, we assume a tab pane that contains a text editor in every tab. We want to keep the "Save All" button disabled when there are no unsaved changes in any of the editors.
+#### Example: Disable "Save All" button on no unsaved changes
+
+Let's assume a tab pane that contains a text editor in every tab. The set of open tabs (i.e. open files) is changing. Let's further assume we use a custom Tab subclass `EditorTab` that has a boolean `savedProperty()` that indicates whether changes in its editor have been saved.
+
+**Task:** Keep the "Save All" button disabled when there are no unsaved changes in any of the editors.
 
 ```java
 ObservableList<ObservableValue<Boolean>> individualTabsSaved =
