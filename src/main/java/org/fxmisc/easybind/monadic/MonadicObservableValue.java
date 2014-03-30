@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableObjectValue;
 import javafx.beans.value.ObservableValue;
 
 import org.fxmisc.easybind.PreboundBinding;
@@ -17,7 +18,7 @@ import org.fxmisc.easybind.select.SelectBuilder;
  * Adds monadic operations to {@link ObservableValue}.
  * @param <T>
  */
-public interface MonadicObservableValue<T> extends ObservableValue<T> {
+public interface MonadicObservableValue<T> extends ObservableObjectValue<T> {
 
     /**
      * Checks whether this ObservableValue holds a (non-null) value.
