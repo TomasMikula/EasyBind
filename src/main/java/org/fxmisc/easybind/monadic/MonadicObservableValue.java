@@ -6,6 +6,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import javafx.beans.InvalidationListener;
+import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.beans.value.ObservableValue;
@@ -140,6 +141,25 @@ public interface MonadicObservableValue<T> extends ObservableObjectValue<T> {
      */
     default <U> MonadicBinding<U> flatMap(Function<? super T, ObservableValue<U>> f) {
         return new FlatMapBinding<>(this, f);
+    }
+
+    /**
+     * Similar to {@link #flatMap(Function)}, except the returned Binding is
+     * also a Property. This means you can call {@code setValue()} and
+     * {@code bind()} methods on the returned value, which delegate to the
+     * currently selected Property.
+     *
+     * <p>As the value of this ObservableValue changes, so does the selected
+     * Property. When the Property returned from this method is bound, as the
+     * selected Property changes, the previously selected property is unbound
+     * and the newly selected property is bound.
+     *
+     * <p>Note that if the currently selected property is {@code null}, then
+     * calling {@code getValue()} on the returned value will return {@code null}
+     * regardless of any prior call to {@code setValue()} or {@code bind()}.
+     */
+    default <U> PropertyBinding<U> selectProperty(Function<? super T, Property<U>> f) {
+        return new FlatMapProperty<>(this, f);
     }
 
     /**
