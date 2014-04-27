@@ -102,20 +102,20 @@ public class MonadicTest {
         b2.s.setValue("Y");
         a.b.setValue(b2);
         assertEquals(1, invalidationCounter.getAndReset());
-        assertEquals("2", selected.getValue());
         assertEquals("2", b2.s.getValue());
+        assertEquals("2", selected.getValue());
 
         src.setValue("3");
         assertEquals(1, invalidationCounter.getAndReset());
-        assertEquals("3", selected.getValue());
         assertEquals("3", b2.s.getValue());
+        assertEquals("3", selected.getValue());
         assertEquals("2", b.s.getValue());
 
         selected.unbind();
         assertEquals(0, invalidationCounter.getAndReset());
         src.setValue("4");
-        assertEquals("3", selected.getValue());
         assertEquals("3", b2.s.getValue());
+        assertEquals("3", selected.getValue());
         assertEquals("2", b.s.getValue());
     }
 
