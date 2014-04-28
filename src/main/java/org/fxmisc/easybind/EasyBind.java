@@ -4,6 +4,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 
@@ -157,5 +158,12 @@ public class EasyBind {
 
     public static <T> SelectBuilder<T> select(ObservableValue<T> selectionRoot) {
         return SelectBuilder.startAt(selectionRoot);
+    }
+
+    public static <T> Subscription bindConditionally(
+            Property<T> target,
+            ObservableValue<? extends T> source,
+            ObservableValue<Boolean> condition) {
+        return new ConditionalBinding<>(target, source, condition);
     }
 }
