@@ -160,6 +160,22 @@ public class EasyBind {
         return SelectBuilder.startAt(selectionRoot);
     }
 
+    /**
+     * Sets up automatic binding and unbinding of {@code target} to/from
+     * {@code source}, based on the changing value of {@code condition}.
+     * In other words, this method starts watching {@code condition} for
+     * changes. When {@code condition} changes to {@code true}, {@code target}
+     * is bound to {@code source}. When {@code condition} changes to
+     * {@code false}, {@code target} is unbound. This keeps happening until
+     * either {@code unsubscribe()} is called on the returned subscription,
+     * or {@code target} is garbage collected.
+     * @param target target of the conditional binding
+     * @param source source of the conditional binding
+     * @param condition controls when to bind and unbind target to/from source
+     * @return a subscription that can be used to dispose the conditional
+     * binding set up by this method, i.e. stop observing {@code condition}
+     * and unbind {@code target} from {@code source}.
+     */
     public static <T> Subscription bindConditionally(
             Property<T> target,
             ObservableValue<? extends T> source,

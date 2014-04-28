@@ -157,6 +157,9 @@ public interface MonadicObservableValue<T> extends ObservableObjectValue<T> {
      * <p>Note that if the currently selected property is {@code null}, then
      * calling {@code getValue()} on the returned value will return {@code null}
      * regardless of any prior call to {@code setValue()} or {@code bind()}.
+     *
+     * <p>Note that you need to retain a reference to the returned value to
+     * prevent it from being garbage collected.
      */
     default <U> PropertyBinding<U> selectProperty(Function<? super T, Property<U>> f) {
         return new FlatMapProperty<>(this, f);
