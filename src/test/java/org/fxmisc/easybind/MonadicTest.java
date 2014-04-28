@@ -90,12 +90,12 @@ public class MonadicTest {
         base.setValue(a);
 
         assertEquals(1, invalidationCounter.getAndReset());
-        assertEquals("1", selected.getValue());
+        assertEquals("1", selected.get());
         assertEquals("1", b.s.getValue());
 
         src.setValue("2");
         assertEquals(1, invalidationCounter.getAndReset());
-        assertEquals("2", selected.getValue());
+        assertEquals("2", selected.get());
         assertEquals("2", b.s.getValue());
 
         B b2 = new B();
@@ -103,20 +103,39 @@ public class MonadicTest {
         a.b.setValue(b2);
         assertEquals(1, invalidationCounter.getAndReset());
         assertEquals("2", b2.s.getValue());
-        assertEquals("2", selected.getValue());
+        assertEquals("2", selected.get());
 
         src.setValue("3");
         assertEquals(1, invalidationCounter.getAndReset());
         assertEquals("3", b2.s.getValue());
-        assertEquals("3", selected.getValue());
+        assertEquals("3", selected.get());
         assertEquals("2", b.s.getValue());
+
+        base.setValue(null);
+        assertEquals(1, invalidationCounter.getAndReset());
+        assertNull(selected.get());
+        assertFalse(b2.s.isBound());
+
+        base.setValue(a);
+        assertEquals(1, invalidationCounter.getAndReset());
+        assertEquals("3", selected.get());
+        assertTrue(b2.s.isBound());
 
         selected.unbind();
         assertEquals(0, invalidationCounter.getAndReset());
         src.setValue("4");
         assertEquals("3", b2.s.getValue());
-        assertEquals("3", selected.getValue());
+        assertEquals("3", selected.get());
         assertEquals("2", b.s.getValue());
+
+        a.b.setValue(b);
+        selected.setValue("5");
+        assertEquals("5", b.s.getValue());
+
+        a.b.setValue(null);
+        selected.bind(src);
+        a.b.setValue(b2);
+        assertTrue(b2.s.isBound());
     }
 
     @Test

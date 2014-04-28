@@ -44,7 +44,7 @@ extends ObjectBinding<U> implements MonadicBinding<U> {
         return mapped != null ? mapped.getValue() : null;
     }
 
-    protected final void setupTargetObservable() {
+    private void setupTargetObservable() {
         if(mapped == null) {
             T baseVal = src.getValue();
             if(baseVal != null) {
@@ -55,6 +55,7 @@ extends ObjectBinding<U> implements MonadicBinding<U> {
     }
 
     protected O getTargetObservable() {
+        setupTargetObservable();
         return mapped;
     }
 
@@ -117,7 +118,7 @@ class FlatMapProperty<T, U> extends FlatMapBindingBase<T, U, Property<U>> implem
 
         // if bound, make sure to rebind eagerly
         if(boundTo != null) {
-            setupTargetObservable();
+            getTargetObservable();
         }
     }
 
