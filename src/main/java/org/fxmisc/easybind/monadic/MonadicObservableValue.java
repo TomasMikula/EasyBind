@@ -1,6 +1,7 @@
 package org.fxmisc.easybind.monadic;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -76,6 +77,15 @@ public interface MonadicObservableValue<T> extends ObservableObjectValue<T> {
         } else {
             return other;
         }
+    }
+
+    /**
+     * Returns an {@code Optional} describing the value currently held by this
+     * ObservableValue, or and empty {@code Optional} if this ObservableValue
+     * is empty.
+     */
+    default Optional<T> getOpt() {
+        return Optional.ofNullable(getValue());
     }
 
     /**

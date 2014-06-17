@@ -143,6 +143,7 @@ interface MonadicObservableValue<T> extends ObservableValue<T> {
     void ifPresent(Consumer<? super T> f);
     T getOrThrow();
     T getOrElse(T other);
+    Optional<T> getOpt();
     MonadicBinding<T> orElse(T other);
     MonadicBinding<T> orElse(ObservableValue<T> other);
     MonadicBinding<T> filter(Predicate<? super T> p);
