@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 import org.fxmisc.easybind.monadic.MonadicBinding;
@@ -181,5 +182,30 @@ public class EasyBind {
             ObservableValue<? extends T> source,
             ObservableValue<Boolean> condition) {
         return new ConditionalBinding<>(target, source, condition);
+    }
+
+    /**
+     * Sync the content of the {@code target} list with the {@code source} list.
+     * @return a subscription that can be used to stop syncing the lists.
+     */
+    public static <T> Subscription listBind(
+            ObservableList<? super T> target,
+            ObservableList<? extends T> source) {
+        target.setAll(source);
+        ListChangeListener<? super T> listener = change -> {
+            while(change.next()) {
+                int from = change.getFrom();
+                int to = change.getTo();
+                if(change.wasPermutated()) {
+                    target.remove(from, to);
+                    target.addAll(from, source.subList(from, to));
+                } else {
+                    target.remove(from, from + change.getRemovedSize());
+                    target.addAll(from, source.subList(from, from + change.getAddedSize()));
+                }
+            }
+        };
+        source.addListener(listener);
+        return () -> source.removeListener(listener);
     }
 }
