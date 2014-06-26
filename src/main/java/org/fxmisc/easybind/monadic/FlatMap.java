@@ -91,6 +91,8 @@ class FlatMapBinding<T, U> extends FlatMapBindingBase<T, U, ObservableValue<U>> 
 
 class FlatMapProperty<T, U> extends FlatMapBindingBase<T, U, Property<U>> implements PropertyBinding<U> {
     private ObservableValue<? extends U> boundTo = null;
+    private boolean resetOnUnbind = false;
+    private U resetTo = null;
 
     public FlatMapProperty(ObservableValue<T> src, Function<? super T, Property<U>> f) {
         super(src, f);
@@ -106,6 +108,9 @@ class FlatMapProperty<T, U> extends FlatMapBindingBase<T, U, Property<U>> implem
         Subscription s2 = () -> {
             if(boundTo != null) {
                 mapped.unbind();
+                if(resetOnUnbind) {
+                    mapped.setValue(resetTo);
+                }
             }
         };
 
@@ -137,6 +142,19 @@ class FlatMapProperty<T, U> extends FlatMapBindingBase<T, U, Property<U>> implem
             target.bind(other);
         }
         boundTo = other;
+        resetOnUnbind = false;
+        resetTo = null;
+    }
+
+    @Override
+    public void bind(ObservableValue<? extends U> other, U resetToOnUnbind) {
+        Property<U> target = getTargetObservable();
+        if(target != null) {
+            target.bind(other);
+        }
+        boundTo = other;
+        resetOnUnbind = true;
+        resetTo = resetToOnUnbind;
     }
 
     @Override

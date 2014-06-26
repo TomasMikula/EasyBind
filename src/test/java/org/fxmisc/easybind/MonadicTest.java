@@ -139,6 +139,32 @@ public class MonadicTest {
     }
 
     @Test
+    public void selectPropertyResetTest() {
+        Property<A> base = new SimpleObjectProperty<>();
+        PropertyBinding<String> selected = EasyBind.monadic(base).flatMap(a -> a.b).selectProperty(b -> b.s);
+        StringProperty source = new SimpleStringProperty("A");
+
+        selected.bind(source, "X");
+
+        assertEquals(null, selected.get());
+
+        A a = new A();
+        B b = new B();
+        a.b.setValue(b);
+        base.setValue(a);
+        assertEquals("A", selected.get());
+        assertEquals("A", b.s.getValue());
+
+        B b2 = new B();
+        a.b.setValue(b2);
+        assertEquals("A", b2.s.getValue());
+        assertEquals("X", b.s.getValue());
+
+        base.setValue(null);
+        assertEquals("X", b2.s.getValue());
+    }
+
+    @Test
     public void orElseTest() {
         StringProperty s1 = new SimpleStringProperty("a");
         StringProperty s2 = new SimpleStringProperty("b");
