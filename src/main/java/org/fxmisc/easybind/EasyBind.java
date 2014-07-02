@@ -1,5 +1,6 @@
 package org.fxmisc.easybind;
 
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -192,18 +193,19 @@ public class EasyBind {
      * @return a subscription that can be used to stop syncing the lists.
      */
     public static <T> Subscription listBind(
-            ObservableList<? super T> target,
+            List<? super T> target,
             ObservableList<? extends T> source) {
-        target.setAll(source);
+        target.clear();
+        target.addAll(source);
         ListChangeListener<? super T> listener = change -> {
             while(change.next()) {
                 int from = change.getFrom();
                 int to = change.getTo();
                 if(change.wasPermutated()) {
-                    target.remove(from, to);
+                    target.subList(from, to).clear();
                     target.addAll(from, source.subList(from, to));
                 } else {
-                    target.remove(from, from + change.getRemovedSize());
+                    target.subList(from, from + change.getRemovedSize()).clear();
                     target.addAll(from, source.subList(from, from + change.getAddedSize()));
                 }
             }

@@ -1,5 +1,6 @@
 package org.fxmisc.easybind;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import javafx.beans.property.Property;
@@ -65,7 +66,7 @@ public final class When {
      * {@code source}'s content.
      */
     public <T> Subscription listBind(
-            ObservableList<? super T> target,
+            List<? super T> target,
             ObservableList<? extends T> source) {
         return bind(() -> EasyBind.listBind(target, source));
     }
