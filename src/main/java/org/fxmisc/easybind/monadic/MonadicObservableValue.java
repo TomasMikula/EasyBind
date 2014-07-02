@@ -18,7 +18,6 @@ import org.fxmisc.easybind.select.SelectBuilder;
 
 /**
  * Adds monadic operations to {@link ObservableValue}.
- * @param <T>
  */
 public interface MonadicObservableValue<T> extends ObservableObjectValue<T> {
 
@@ -116,7 +115,6 @@ public interface MonadicObservableValue<T> extends ObservableObjectValue<T> {
      * as this ObservableValue when the value satisfies the predicate
      * and is empty when this ObservableValue is empty or its value
      * does not satisfy the given predicate.
-     * @param p
      */
     default MonadicBinding<T> filter(Predicate<? super T> p) {
         return new PreboundBinding<T>(this) {
@@ -147,7 +145,6 @@ public interface MonadicObservableValue<T> extends ObservableObjectValue<T> {
      * Returns a new ObservableValue that, when this ObservableValue holds
      * value {@code x}, holds the value held by {@code f(x)}, and is empty
      * when this ObservableValue is empty.
-     * @param f
      */
     default <U> MonadicBinding<U> flatMap(Function<? super T, ObservableValue<U>> f) {
         return new FlatMapBinding<>(this, f);
@@ -178,8 +175,6 @@ public interface MonadicObservableValue<T> extends ObservableObjectValue<T> {
     /**
      * Starts a selection chain. A selection chain is just a more efficient
      * equivalent to a chain of flatMaps.
-     * @param selector
-     * @return
      */
     default <U> SelectBuilder<U> select(Function<? super T, ObservableValue<U>> selector) {
         return SelectBuilder.startAt(this).select(selector);
@@ -207,8 +202,6 @@ public interface MonadicObservableValue<T> extends ObservableObjectValue<T> {
      * // later
      * observable.removeListener();
      * }</pre>
-     *
-     * @param listener
      */
     default Subscription subscribe(InvalidationListener listener) {
         addListener(listener);
@@ -219,7 +212,6 @@ public interface MonadicObservableValue<T> extends ObservableObjectValue<T> {
      * Adds a change listener and returns a Subscription that can be
      * used to remove that listener. See the example at
      * {@link #subscribe(InvalidationListener)}.
-     * @param listener
      */
     default Subscription subscribe(ChangeListener<? super T> listener) {
         addListener(listener);

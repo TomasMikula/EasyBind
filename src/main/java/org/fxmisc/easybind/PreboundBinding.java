@@ -8,7 +8,6 @@ import org.fxmisc.easybind.monadic.MonadicBinding;
 /**
  * Object binding that binds to its dependencies on creation
  * and unbinds from them on dispose.
- * @param <T>
  */
 public abstract class PreboundBinding<T> extends ObjectBinding<T> implements MonadicBinding<T> {
     private final Observable[] dependencies;
