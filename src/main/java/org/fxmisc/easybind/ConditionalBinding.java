@@ -8,6 +8,7 @@ import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
+@Deprecated
 class ConditionalBinding<T> implements Subscription, InvalidationListener,
         ChangeListener<Boolean> {
 
@@ -60,7 +61,7 @@ class ConditionalBinding<T> implements Subscription, InvalidationListener,
             condition.removeListener((ChangeListener<Boolean>) this);
 
             Property<T> tgt = this.target.get();
-            if(tgt != null ) {
+            if(tgt != null) {
                 tgt.removeListener(this);
                 tgt.unbind();
             }

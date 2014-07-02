@@ -176,7 +176,10 @@ public class EasyBind {
      * @return a subscription that can be used to dispose the conditional
      * binding set up by this method, i.e. stop observing {@code condition}
      * and unbind {@code target} from {@code source}.
+     * @deprecated Since 1.0.2. Use {@code when(condition).bind(target, source)}
+     * instead.
      */
+    @Deprecated
     public static <T> Subscription bindConditionally(
             Property<T> target,
             ObservableValue<? extends T> source,
@@ -207,5 +210,12 @@ public class EasyBind {
         };
         source.addListener(listener);
         return () -> source.removeListener(listener);
+    }
+
+    /**
+     * Entry point for creating conditional bindings.
+     */
+    public static When when(ObservableValue<Boolean> condition) {
+        return new When(condition);
     }
 }
