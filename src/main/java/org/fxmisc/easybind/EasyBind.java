@@ -228,9 +228,6 @@ public class EasyBind {
      * Adds {@code element} to {@code collection} when {@code condition} is
      * {@code true} and removes it from {@code collection} when
      * {@code condition} is {@code false}.
-     * @param collection
-     * @param element
-     * @param condition
      * @return a subscription that can be used to stop observing
      * {@code condition} and manipulating {@code collection}.
      */
