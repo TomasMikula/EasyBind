@@ -161,31 +161,31 @@ Use EasyBind in your project
 
 ### Stable release
 
-Current stable release is 1.0.2.
+Current stable release is 1.0.3.
 
 #### Maven coordinates
 
 | Group ID            | Artifact ID | Version |
 | :-----------------: | :---------: | :-----: |
-| org.fxmisc.easybind | easybind    | 1.0.2   |
+| org.fxmisc.easybind | easybind    | 1.0.3   |
 
 #### Gradle example
 
 ```groovy
 dependencies {
-    compile group: 'org.fxmisc.easybind', name: 'easybind', version: '1.0.2'
+    compile group: 'org.fxmisc.easybind', name: 'easybind', version: '1.0.3'
 }
 ```
 
 #### Sbt example
 
 ```scala
-libraryDependencies += "org.fxmisc.easybind" % "easybind" % "1.0.2"
+libraryDependencies += "org.fxmisc.easybind" % "easybind" % "1.0.3"
 ```
 
 #### Manual download
 
-[Download](https://github.com/TomasMikula/EasyBind/releases/download/v1.0.2/easybind-1.0.2.jar) the JAR file and place it on your classpath.
+[Download](https://github.com/TomasMikula/EasyBind/releases/download/v1.0.3/easybind-1.0.3.jar) the JAR file and place it on your classpath.
 
 
 ### Snapshot releases
@@ -196,7 +196,7 @@ Snapshot releases are deployed to Sonatype snapshot repository.
 
 | Group ID            | Artifact ID | Version        |
 | :-----------------: | :---------: | :------------: |
-| org.fxmisc.easybind | easybind    | 1.0.3-SNAPSHOT |
+| org.fxmisc.easybind | easybind    | 1.0.4-SNAPSHOT |
 
 #### Gradle example
 
@@ -208,7 +208,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'org.fxmisc.easybind', name: 'easybind', version: '1.0.3-SNAPSHOT'
+    compile group: 'org.fxmisc.easybind', name: 'easybind', version: '1.0.4-SNAPSHOT'
 }
 ```
 
@@ -217,12 +217,12 @@ dependencies {
 ```scala
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
-libraryDependencies += "org.fxmisc.easybind" % "easybind" % "1.0.3-SNAPSHOT"
+libraryDependencies += "org.fxmisc.easybind" % "easybind" % "1.0.4-SNAPSHOT"
 ```
 
 #### Manual download
 
-[Download](https://oss.sonatype.org/content/repositories/snapshots/org/fxmisc/easybind/easybind/1.0.3-SNAPSHOT/) the latest JAR file and place it on your classpath.
+[Download](https://oss.sonatype.org/content/repositories/snapshots/org/fxmisc/easybind/easybind/1.0.4-SNAPSHOT/) the latest JAR file and place it on your classpath.
 
 
 Links
