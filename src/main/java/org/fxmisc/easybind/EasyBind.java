@@ -1,11 +1,14 @@
 package org.fxmisc.easybind;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
 import javafx.beans.property.Property;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -219,5 +222,49 @@ public class EasyBind {
      */
     public static When when(ObservableValue<Boolean> condition) {
         return new When(condition);
+    }
+
+    /**
+     * Adds {@code element} to {@code collection} when {@code condition} is
+     * {@code true} and removes it from {@code collection} when
+     * {@code condition} is {@code false}.
+     * @param collection
+     * @param element
+     * @param condition
+     * @return a subscription that can be used to stop observing
+     * {@code condition} and manipulating {@code collection}.
+     */
+    public static <T> Subscription includeWhen(
+            Collection<T> collection,
+            T element,
+            ObservableValue<Boolean> condition) {
+        return subscribe(condition, new Consumer<Boolean>() {
+            private boolean included = false;
+
+            @Override
+            public void accept(Boolean value) {
+                if(value && !included) {
+                    included = collection.add(element);
+                } else if(!value && included) {
+                    collection.remove(element);
+                    included = false;
+                }
+            }
+        });
+    }
+
+    /**
+     * Invokes {@code subscriber} for the current and every new value of
+     * {@code observable}.
+     * @param observable observable value to subscribe to
+     * @param subscriber action to invoke for values of {@code observable}.
+     * @return a subscription that can be used to stop invoking subscriber
+     * for any further {@code observable} changes.
+     */
+    public static <T> Subscription subscribe(ObservableValue<T> observable, Consumer<? super T> subscriber) {
+        subscriber.accept(observable.getValue());
+        ChangeListener<? super T> listener = (obs, oldValue, newValue) -> subscriber.accept(newValue);
+        observable.addListener(listener);
+        return () -> observable.removeListener(listener);
     }
 }
