@@ -4,8 +4,8 @@ EasyBind
 EasyBind leverages lambdas to reduce boilerplate when creating custom bindings, provides a type-safe alternative to `Bindings.select*` methods (inspired by Anton Nashatyrev's [feature request](https://javafx-jira.kenai.com/browse/RT-35923), planned for JavaFX 9) and adds _monadic_ operations to `ObservableValue`.
 
 
-Binding factory methods
------------------------
+Static methods
+--------------
 
 ### map
 
@@ -128,6 +128,21 @@ ObservableValue<Boolean> allTabsSaved = EasyBind.combine(
 
 Button saveAllButton = new Button(...);
 saveAllButton.disableProperty().bind(allTabsSaved);
+```
+
+### subscribe to values
+
+Often one wants to execute some code for _each_ value of an `ObservableValue`, that is for the _current_ value and _each new_ value. This typically results in code like this:
+
+```java
+this.doSomething(observable.getValue());
+observable.addListener((obs, oldValue, newValue) -> this.doSomething(newValue));
+```
+
+This can be expressed more concisely using the `subscribe` helper method:
+
+```java
+EasyBind.subscribe(observable, this::doSomething);
 ```
 
 
