@@ -130,6 +130,16 @@ Button saveAllButton = new Button(...);
 saveAllButton.disableProperty().bind(allTabsSaved);
 ```
 
+### bind list
+
+Occasionally one needs to synchronize the contents of an (observable) list with another observable list. If that is your case, [`listBind`](http://www.fxmisc.org/easybind/javadoc/org/fxmisc/easybind/EasyBind.html#listBind-java.util.List-javafx.collections.ObservableList-) is your friend:
+
+```java
+ObservableList<T> sourceList = ...;
+List<T> targetList = ...;
+EasyBind.listBind(targetList, sourceList);
+```
+
 ### subscribe to values
 
 Often one wants to execute some code for _each_ value of an `ObservableValue`, that is for the _current_ value and _each new_ value. This typically results in code like this:
@@ -139,7 +149,7 @@ this.doSomething(observable.getValue());
 observable.addListener((obs, oldValue, newValue) -> this.doSomething(newValue));
 ```
 
-This can be expressed more concisely using the `subscribe` helper method:
+This can be expressed more concisely using the [`subscribe`](http://www.fxmisc.org/easybind/javadoc/org/fxmisc/easybind/EasyBind.html#subscribe-javafx.beans.value.ObservableValue-java.util.function.Consumer-) helper method:
 
 ```java
 EasyBind.subscribe(observable, this::doSomething);
