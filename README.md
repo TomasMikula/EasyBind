@@ -145,6 +145,23 @@ This can be expressed more concisely using the `subscribe` helper method:
 EasyBind.subscribe(observable, this::doSomething);
 ```
 
+### conditional collection membership
+
+[`EasyBind.includeWhen`](http://www.fxmisc.org/easybind/javadoc/org/fxmisc/easybind/EasyBind.html#includeWhen-java.util.Collection-T-javafx.beans.value.ObservableValue-) includes or excludes an element in/from a collection based on a boolean condition.
+
+Say that you want to draw a graph and highlight an edge when the edge itself or either of its end vertices is hovered over. To achieve this, let's add `.highlight` CSS class to the edge node when either of the three is hovered over and remove it when none of them is hovered over:
+
+```java
+BooleanBinding highlight = edge.hoverProperty()
+        .or(v1.hoverProperty())
+        .or(v2.hoverProperty());
+EasyBind.includeWhen(edge.getStyleClass(), "highlight", highlight);
+```
+
+```css
+.highlight { -fx-stroke: green; }
+```
+
 
 Monadic observable values
 -------------------------
