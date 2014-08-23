@@ -191,11 +191,24 @@ interface MonadicObservableValue<T> extends ObservableValue<T> {
     MonadicBinding<T> filter(Predicate<? super T> p);
     <U> MonadicBinding<U> map(Function<? super T, ? extends U> f);
     <U> MonadicBinding<U> flatMap(Function<? super T, ObservableValue<U>> f);
-    <U> SelectBuilder<U> select(Function<? super T, ObservableValue<U>> f);
+    <U> PropertyBinding<U> selectProperty(Function<? super T, Property<U>> f);
 }
 ```
 
 Read more about monadic operations in [this blog post](http://tomasmikula.github.io/blog/2014/03/26/monadic-operations-on-observablevalue.html).
+
+The last two methods, `flatMap` and `selectProperty`, let you select a nested `ObservableValue` or `Property`, respectively. The nested property can be bound, just like a normal property. Example:
+
+```java
+DoubleProperty changingOpacity = ...;
+Property<Number> currentTabContentOpacity = EasyBind.monadic(tabPane.selectionModelProperty())
+        .flatMap(SelectionModel::selectedItemProperty)
+        .flatMap(Tab::contentProperty)
+        .selectProperty(Node::opacityProperty);
+currentTabContentOpacity.bind(changingOpacity);
+```
+
+In this example, when you switch tabs, the old tab's content opacity is unbound and the new tab's content opacity is bound to `changingOpacity`.
 
 
 Use EasyBind in your project
