@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import javafx.beans.property.Property;
@@ -15,6 +16,7 @@ import javafx.collections.ObservableList;
 
 import org.fxmisc.easybind.monadic.MonadicBinding;
 import org.fxmisc.easybind.monadic.MonadicObservableValue;
+import org.fxmisc.easybind.monadic.PropertyBinding;
 import org.fxmisc.easybind.select.SelectBuilder;
 
 /**
@@ -52,13 +54,20 @@ public class EasyBind {
         if(o instanceof MonadicObservableValue) {
             return (MonadicObservableValue<T>) o;
         } else {
-            return new PreboundBinding<T>(o) {
-                @Override
-                protected T computeValue() {
-                    return o.getValue();
-                }
-            };
+            return new MonadicWrapper<>(o);
         }
+    }
+
+    public static <T> MonadicBinding<T> filter(
+            ObservableValue<T> src,
+            Predicate<? super T> p) {
+        return new PreboundBinding<T>(src) {
+            @Override
+            protected T computeValue() {
+                T val = src.getValue();
+                return (val != null && p.test(val)) ? val : null;
+            }
+        };
     }
 
     public static <T, U> MonadicBinding<U> map(
@@ -71,6 +80,34 @@ public class EasyBind {
                 return baseVal != null ? f.apply(baseVal) : null;
             }
         };
+    }
+
+    public static <T, U> MonadicBinding<U> flatMap(
+            ObservableValue<T> src,
+            Function<? super T, ? extends ObservableValue<U>> f) {
+        return new FlatMapBinding<>(src, f);
+    }
+
+    public static <T, U> PropertyBinding<U> selectProperty(
+            ObservableValue<T> src,
+            Function<? super T, ? extends Property<U>> f) {
+        return new FlatMapProperty<>(src, f);
+    }
+
+    public static <T> MonadicBinding<T> orElse(ObservableValue<? extends T> src, T other) {
+        return new PreboundBinding<T>(src) {
+            @Override
+            protected T computeValue() {
+                T val = src.getValue();
+                return val != null ? val : other;
+            }
+        };
+    }
+
+    public static <T> MonadicBinding<T> orElse(
+            ObservableValue<? extends T> src,
+            ObservableValue<? extends T> other) {
+        return new FirstNonNullBinding<>(src, other);
     }
 
     public static <T, U> ObservableList<U> map(

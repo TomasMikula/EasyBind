@@ -1,4 +1,4 @@
-package org.fxmisc.easybind.monadic;
+package org.fxmisc.easybind;
 
 import java.util.function.Function;
 
@@ -9,7 +9,8 @@ import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 
-import org.fxmisc.easybind.Subscription;
+import org.fxmisc.easybind.monadic.MonadicBinding;
+import org.fxmisc.easybind.monadic.PropertyBinding;
 
 abstract class FlatMapBindingBase<T, U, O extends ObservableValue<U>>
 extends ObjectBinding<U> implements MonadicBinding<U> {
@@ -82,24 +83,24 @@ extends ObjectBinding<U> implements MonadicBinding<U> {
     }
 }
 
-class FlatMapBinding<T, U> extends FlatMapBindingBase<T, U, ObservableValue<U>> {
+class FlatMapBinding<T, U, O extends ObservableValue<U>> extends FlatMapBindingBase<T, U, O> {
 
-    public FlatMapBinding(ObservableValue<T> src, Function<? super T, ObservableValue<U>> f) {
+    public FlatMapBinding(ObservableValue<T> src, Function<? super T, O> f) {
         super(src, f);
     }
 }
 
-class FlatMapProperty<T, U> extends FlatMapBindingBase<T, U, Property<U>> implements PropertyBinding<U> {
+class FlatMapProperty<T, U, O extends Property<U>> extends FlatMapBindingBase<T, U, O> implements PropertyBinding<U> {
     private ObservableValue<? extends U> boundTo = null;
     private boolean resetOnUnbind = false;
     private U resetTo = null;
 
-    public FlatMapProperty(ObservableValue<T> src, Function<? super T, Property<U>> f) {
+    public FlatMapProperty(ObservableValue<T> src, Function<? super T, O> f) {
         super(src, f);
     }
 
     @Override
-    protected Subscription observeTargetObservable(Property<U> mapped) {
+    protected Subscription observeTargetObservable(O mapped) {
         if(boundTo != null) {
             mapped.bind(boundTo);
         }

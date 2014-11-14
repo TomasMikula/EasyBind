@@ -1,4 +1,6 @@
-package org.fxmisc.easybind.monadic;
+package org.fxmisc.easybind;
+
+import org.fxmisc.easybind.monadic.MonadicBinding;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;

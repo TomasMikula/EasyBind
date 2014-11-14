@@ -13,7 +13,6 @@ import javafx.beans.value.ObservableObjectValue;
 import javafx.beans.value.ObservableValue;
 
 import org.fxmisc.easybind.EasyBind;
-import org.fxmisc.easybind.PreboundBinding;
 import org.fxmisc.easybind.Subscription;
 import org.fxmisc.easybind.select.SelectBuilder;
 
@@ -93,13 +92,7 @@ public interface MonadicObservableValue<T> extends ObservableObjectValue<T> {
      * ObservableValue, or {@code other} when this ObservableValue is empty.
      */
     default MonadicBinding<T> orElse(T other) {
-        return new PreboundBinding<T>(this) {
-            @Override
-            protected T computeValue() {
-                T val = MonadicObservableValue.this.getValue();
-                return val != null ? val : other;
-            }
-        };
+        return EasyBind.orElse(this, other);
     }
 
     /**
@@ -108,7 +101,7 @@ public interface MonadicObservableValue<T> extends ObservableObjectValue<T> {
      * ObservableValue is empty.
      */
     default MonadicBinding<T> orElse(ObservableValue<T> other) {
-        return new FirstNonNullBinding<>(this, other);
+        return EasyBind.orElse(this, other);
     }
 
     /**
@@ -118,13 +111,7 @@ public interface MonadicObservableValue<T> extends ObservableObjectValue<T> {
      * does not satisfy the given predicate.
      */
     default MonadicBinding<T> filter(Predicate<? super T> p) {
-        return new PreboundBinding<T>(this) {
-            @Override
-            protected T computeValue() {
-                T val = MonadicObservableValue.this.getValue();
-                return (val != null && p.test(val)) ? val : null;
-            }
-        };
+        return EasyBind.filter(this, p);
     }
 
     /**
@@ -141,8 +128,9 @@ public interface MonadicObservableValue<T> extends ObservableObjectValue<T> {
      * value {@code x}, holds the value held by {@code f(x)}, and is empty
      * when this ObservableValue is empty.
      */
-    default <U> MonadicBinding<U> flatMap(Function<? super T, ObservableValue<U>> f) {
-        return new FlatMapBinding<>(this, f);
+    default <U> MonadicBinding<U> flatMap(
+            Function<? super T, ? extends ObservableValue<U>> f) {
+        return EasyBind.flatMap(this, f);
     }
 
     /**
@@ -163,8 +151,9 @@ public interface MonadicObservableValue<T> extends ObservableObjectValue<T> {
      * <p>Note that you need to retain a reference to the returned value to
      * prevent it from being garbage collected.
      */
-    default <U> PropertyBinding<U> selectProperty(Function<? super T, Property<U>> f) {
-        return new FlatMapProperty<>(this, f);
+    default <U> PropertyBinding<U> selectProperty(
+            Function<? super T, ? extends Property<U>> f) {
+        return EasyBind.selectProperty(this, f);
     }
 
     /**
