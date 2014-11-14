@@ -12,6 +12,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.beans.value.ObservableValue;
 
+import org.fxmisc.easybind.EasyBind;
 import org.fxmisc.easybind.PreboundBinding;
 import org.fxmisc.easybind.Subscription;
 import org.fxmisc.easybind.select.SelectBuilder;
@@ -132,13 +133,7 @@ public interface MonadicObservableValue<T> extends ObservableObjectValue<T> {
      * @param f function to map the value held by this ObservableValue.
      */
     default <U> MonadicBinding<U> map(Function<? super T, ? extends U> f) {
-        return new PreboundBinding<U>(this) {
-            @Override
-            protected U computeValue() {
-                T baseVal = MonadicObservableValue.this.getValue();
-                return baseVal != null ? f.apply(baseVal) : null;
-            }
-        };
+        return EasyBind.map(this, f);
     }
 
     /**

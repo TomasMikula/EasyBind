@@ -63,11 +63,12 @@ public class EasyBind {
 
     public static <T, U> MonadicBinding<U> map(
             ObservableValue<T> src,
-            Function<T, U> f) {
+            Function<? super T, ? extends U> f) {
         return new PreboundBinding<U>(src) {
             @Override
             protected U computeValue() {
-                return f.apply(src.getValue());
+                T baseVal = src.getValue();
+                return baseVal != null ? f.apply(baseVal) : null;
             }
         };
     }
