@@ -49,9 +49,13 @@ class ObservablesListCombinationBinding<T, U> extends ObjectBinding<U> implement
 
     private void sourceChanged(
             Change<? extends ObservableValue<? extends T>> ch) {
+        boolean changed = false;
         while(ch.next()) {
             ch.getRemoved().forEach(elem -> elem.removeListener(weakElemListener));
             ch.getAddedSubList().forEach(elem -> elem.addListener(weakElemListener));
+            changed = true;
+        }
+        if (changed) {
             invalidate();
         }
     }
