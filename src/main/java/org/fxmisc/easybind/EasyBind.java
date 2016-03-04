@@ -199,6 +199,12 @@ public class EasyBind {
         return new ObservablesListCombinationBinding<>(list, f);
     }
 
+    public static <T, R> MonadicBinding<R> weakCombine(
+            ObservableList<? extends T> list,
+            Function<? super Stream<T>, ? extends R> f) {
+        return new ListCombinationBinding<>(list, f);
+    }
+
     public static <T> SelectBuilder<T> select(ObservableValue<T> selectionRoot) {
         return SelectBuilder.startAt(selectionRoot);
     }
