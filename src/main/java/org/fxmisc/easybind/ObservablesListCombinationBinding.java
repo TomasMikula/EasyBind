@@ -14,7 +14,7 @@ import javafx.collections.WeakListChangeListener;
 
 import org.fxmisc.easybind.monadic.MonadicBinding;
 
-class ListCombinationBinding<T, U> extends ObjectBinding<U> implements
+class ObservablesListCombinationBinding<T, U> extends ObjectBinding<U> implements
         MonadicBinding<U> {
 
     private final ListChangeListener<ObservableValue<? extends T>> listListener = ch -> sourceChanged(ch);
@@ -26,7 +26,7 @@ class ListCombinationBinding<T, U> extends ObjectBinding<U> implements
     private final ObservableList<? extends ObservableValue<? extends T>> source;
     private final Function<? super Stream<T>, ? extends U> combiner;
 
-    public ListCombinationBinding(
+    public ObservablesListCombinationBinding(
             ObservableList<? extends ObservableValue<? extends T>> list,
             Function<? super Stream<T>, ? extends U> f) {
         source = list;

@@ -196,7 +196,7 @@ public class EasyBind {
     public static <T, R> MonadicBinding<R> combine(
             ObservableList<? extends ObservableValue<? extends T>> list,
             Function<? super Stream<T>, ? extends R> f) {
-        return new ListCombinationBinding<>(list, f);
+        return new ObservablesListCombinationBinding<>(list, f);
     }
 
     public static <T> SelectBuilder<T> select(ObservableValue<T> selectionRoot) {

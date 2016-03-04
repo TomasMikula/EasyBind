@@ -9,7 +9,7 @@ import javafx.collections.ObservableList;
 
 import org.junit.Test;
 
-public class CombineListTest {
+public class CombineObservablesListTest {
 
     @Test
     public void test() {
