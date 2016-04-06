@@ -1,6 +1,5 @@
 package org.fxmisc.easybind;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -12,7 +11,7 @@ import javafx.collections.ObservableListBase;
 class ConcatList<E> extends ObservableListBase<E> {
 	private final List<ObservableList<? extends E>> sourceLists;
 
-	public ObservableConcatList(List<ObservableList<? extends E>> sourceLists) {
+	public ConcatList(List<ObservableList<? extends E>> sourceLists) {
 		assert sourceLists != null;
 		this.sourceLists = sourceLists;
 		for (ObservableList<? extends E> source : sourceLists)

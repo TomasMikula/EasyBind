@@ -118,12 +118,12 @@ public class EasyBind {
     }
 
     public static <T> ObservableList<T> concat(
-            List<ObservableList<T>> sources) {
+            List<ObservableList<? extends T>> sources) {
         return new ConcatList<>(sources);
     }
 
     public static <T> ObservableList<T> concat(
-            ObservableList<T>... sources) {
+            ObservableList<? extends T>... sources) {
         return new ConcatList<>(Arrays.asList(sources));
     }
 
