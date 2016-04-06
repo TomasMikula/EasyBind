@@ -1,5 +1,6 @@
 package org.fxmisc.easybind;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -114,6 +115,16 @@ public class EasyBind {
             ObservableList<? extends T> sourceList,
             Function<? super T, ? extends U> f) {
         return new MappedList<>(sourceList, f);
+    }
+
+    public static <T> ObservableList<T> concat(
+            List<ObservableList<T>> sources) {
+        return new ConcatList<>(sources);
+    }
+
+    public static <T> ObservableList<T> concat(
+            ObservableList<T>... sources) {
+        return new ConcatList<>(Arrays.asList(sources));
     }
 
     public static <A, B, R> MonadicBinding<R> combine(
