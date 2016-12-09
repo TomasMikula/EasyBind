@@ -1,6 +1,5 @@
 package org.fxmisc.easybind;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -12,6 +11,7 @@ import java.util.stream.Stream;
 import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
@@ -117,14 +117,14 @@ public class EasyBind {
         return new MappedList<>(sourceList, f);
     }
 
-    public static <T> ObservableList<T> concat(
-            List<ObservableList<? extends T>> sources) {
-        return new ConcatList<>(sources);
+    public static <T> ObservableList<T> flatten(
+            ObservableList<ObservableList<? extends T>> sources) {
+        return new FlattenedList<>(sources);
     }
 
-    public static <T> ObservableList<T> concat(
+    public static <T> ObservableList<T> flatten(
             ObservableList<? extends T>... sources) {
-        return new ConcatList<>(Arrays.asList(sources));
+        return new FlattenedList<>(FXCollections.observableArrayList(sources));
     }
 
     public static <A, B, R> MonadicBinding<R> combine(

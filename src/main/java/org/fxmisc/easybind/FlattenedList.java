@@ -1,25 +1,80 @@
 package org.fxmisc.easybind;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableListBase;
 
-class ConcatList<E> extends ObservableListBase<E> {
-	private final List<ObservableList<? extends E>> sourceLists;
+class FlattenedList<E> extends ObservableListBase<E> {
+	private final ObservableList<ObservableList<? extends E>> sourceLists;
 
-	ConcatList(List<ObservableList<? extends E>> sourceLists) {
-		assert sourceLists != null;
+	FlattenedList(ObservableList<ObservableList<? extends E>> sourceLists) {
+		if (sourceLists == null) {
+			throw new NullPointerException("sourceLists = null");
+		}
+
 		this.sourceLists = sourceLists;
 
 		// We make a Unique set of source lists, otherwise the event gets called multiple
 		// times if there are duplicate lists.
 		Set<ObservableList<? extends E>> sourcesSet = new HashSet<>(sourceLists);
-		sourcesSet.forEach(source -> source.addListener(this::onSourceListChanged));
+		sourcesSet.forEach(source -> source.addListener(this::onSourceChanged));
+
+		sourceLists.addListener(this::onSourcesListChanged);
 	}
 
-	private void onSourceListChanged(ListChangeListener.Change<? extends E> change) {
+	private void onSourcesListChanged(ListChangeListener.Change<? extends ObservableList<? extends E>> change) {
+
+		beginChange();
+
+		while (change.next()) {
+			int fromIdx = 0; // Flattened start idx
+			for (int i = 0; i < change.getFrom(); ++i) {
+				fromIdx += sourceLists.get(i).size();
+			}
+
+			int toIdx = fromIdx; // Flattened end idx
+			for (int i = change.getFrom(); i < change.getTo(); ++i) {
+				toIdx += sourceLists.get(i).size();
+			}
+
+			final int rangeSize = toIdx - fromIdx;
+
+			if (change.wasPermutated()) {
+
+				// build up a set of permutations based on the offsets AND the actual permutation
+				int[] permutation = new int[rangeSize];
+				int fIdx = fromIdx;
+				for (int parentIdx = change.getFrom(); parentIdx < change.getTo(); ++parentIdx) {
+					for (int i = 0; i < sourceLists.get(i).size(); ++i, fIdx++) {
+						permutation[fIdx] = change.getPermutation(parentIdx) + i;
+					}
+				}
+
+				nextPermutation(fromIdx, toIdx, permutation);
+			} else if (change.wasUpdated()) {
+				// Just iterate over the fromIdx..toIdx
+				for (int i = fromIdx; i < toIdx; ++i) {
+					nextUpdate(i);
+				}
+			} else if (change.wasAdded()) {
+				nextAdd(fromIdx, toIdx);
+			} else {
+				// Each remove is indexed
+				List<E> itemsToRemove = new ArrayList<>(rangeSize);
+
+				change.getRemoved().forEach(itemsToRemove::addAll);
+
+				nextRemove(fromIdx, itemsToRemove);
+			}
+		}
+
+		endChange();
+	}
+
+	private void onSourceChanged(ListChangeListener.Change<? extends E> change) {
 		ObservableList<? extends E> source = change.getList();
 
 		List<Integer> offsets = new ArrayList<>();

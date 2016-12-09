@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class ConcatListTest {
+public class FlattenedListTest {
 
 	abstract class CountedChangeListener<E> implements ListChangeListener<E> {
 
@@ -37,6 +37,8 @@ public class ConcatListTest {
 	private ObservableList<String> c;
 	private ObservableList<String> d;
 
+	private ObservableList<ObservableList<? extends String>> aa;
+
 	private StringBinding bindCOne;
 	private StringBinding bindCFour;
 
@@ -45,7 +47,10 @@ public class ConcatListTest {
 		a = FXCollections.observableArrayList("zero", "one", "two");
 		b = FXCollections.observableArrayList("three", "four", "five");
 		c = EasyBind.concat(a, b);
-		d = EasyBind.concat(a, a);
+
+		aa = FXCollections.observableArrayList(a, a);
+		d = EasyBind.flatten(aa);
+
 
 		bindCOne = Bindings.stringValueAt(c, 1);
 		bindCFour = Bindings.stringValueAt(c, 4);
@@ -103,15 +108,8 @@ public class ConcatListTest {
 					assertEquals("x", c.getAddedSubList().get(0));
 				}, 1);
 
-		CountedChangeListener<String> d_index1Added = new CountedChangeListener<String>() {
-					@Override
-					public void actualChange(Change c) {
-						fail("Should not be called, d is not changed.");
-					}
-				};
-
 		c.addListener(c_index1Added);
-		d.addListener(d_index1Added);
+		d.addListener(failOnRunListener);
 
 		b.add(1, "x"); // "three", "x", "four", "five"
 
@@ -152,6 +150,32 @@ public class ConcatListTest {
 		assertEquals(1, d_index0Update.getCallCount());
 	}
 
+	@Test
+	public void removeList() {
+		ListChangeListener<String> checkChange = c -> {
+			assertTrue(c.wasRemoved());
+
+			assertEquals(Arrays.asList("zero", "one", "two"), c.getRemoved());
+		};
+
+		CountedChangeListener<String> d_index0Update =
+				new VerifyCountedChangeListener<>(checkChange, 1);
+
+		c.addListener(failOnRunListener);
+		d.addListener(d_index0Update);
+
+		// Trigger an "Added" event for the list.. because odd.. not Updated
+
+		aa.remove(a);
+
+		List<String> expectedC = Arrays.asList("zero", "one", "two", "three", "four", "five");
+		List<String> expectedD = Arrays.asList("zero", "one", "two");
+
+		assertEquals(expectedC, c);
+		assertEquals(expectedD, d);
+		assertEquals(1, d_index0Update.getCallCount());
+	}
+
 	private class VerifyCountedChangeListener<E> extends CountedChangeListener<E> {
 		private final int iterationCount;
 		private final ListChangeListener<E> checkChange;
@@ -172,4 +196,11 @@ public class ConcatListTest {
             assertEquals(this.iterationCount, iterationCount);
         }
 	}
+
+	private final CountedChangeListener<String> failOnRunListener = new CountedChangeListener<String>() {
+		@Override
+		public void actualChange(Change c) {
+			fail("Should not be called, d is not changed.");
+		}
+	};
 }
