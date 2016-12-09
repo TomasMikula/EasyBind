@@ -1,8 +1,6 @@
 package org.fxmisc.easybind;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -11,34 +9,71 @@ import javafx.collections.ObservableListBase;
 class ConcatList<E> extends ObservableListBase<E> {
 	private final List<ObservableList<? extends E>> sourceLists;
 
-	public ConcatList(List<ObservableList<? extends E>> sourceLists) {
+	ConcatList(List<ObservableList<? extends E>> sourceLists) {
 		assert sourceLists != null;
 		this.sourceLists = sourceLists;
-		for (ObservableList<? extends E> source : sourceLists)
-			source.addListener(this::onSourceListChanged);
+
+		// We make a Unique set of source lists, otherwise the event gets called multiple
+		// times if there are duplicate lists.
+		Set<ObservableList<? extends E>> sourcesSet = new HashSet<>(sourceLists);
+		sourcesSet.forEach(source -> source.addListener(this::onSourceListChanged));
 	}
 
 	private void onSourceListChanged(ListChangeListener.Change<? extends E> change) {
 		ObservableList<? extends E> source = change.getList();
-		int indexOffset = 0;
-		for (int i = 0; sourceLists.get(i) != source; ++i)
-			indexOffset += sourceLists.get(i).size();
+
+		List<Integer> offsets = new ArrayList<>();
+		int calcOffset = 0;
+		for (ObservableList<? extends E> currList : sourceLists) {
+			if (currList == source) {
+				offsets.add(calcOffset);
+			}
+
+			calcOffset += currList.size();
+		}
+
+		// Because a List could be duplicated, we have to do the change for EVERY offset.
+		// Annoying, but it's needed.
 
 		beginChange();
 		while (change.next()) {
 			if (change.wasPermutated()) {
 				int rangeSize = change.getTo() - change.getFrom();
-				int[] permutation = new int[rangeSize];
-				for (int i = 0; i < rangeSize; ++i)
-					permutation[i] = change.getPermutation(i + change.getFrom()) + indexOffset;
-				nextPermutation(change.getFrom() + indexOffset, change.getTo() + indexOffset, permutation);
+
+				// build up a set of permutations based on the offsets AND the actual permutation
+				int[] permutation = new int[rangeSize * offsets.size()];
+				for (int offsetIdx = 0; offsetIdx < offsets.size(); ++offsetIdx) {
+					int indexOffset = offsets.get(offsetIdx);
+					for (int i = 0; i < rangeSize; ++i) {
+						permutation[i + offsetIdx * rangeSize] =
+								change.getPermutation(i + change.getFrom()) + indexOffset;
+					}
+				}
+
+				for (int indexOffset: offsets) {
+					nextPermutation(change.getFrom() + indexOffset, change.getTo() + indexOffset, permutation);
+				}
 			} else if (change.wasUpdated()) {
-				for (int i = change.getFrom(); i < change.getTo(); ++i)
-					nextUpdate(i+indexOffset);
+
+				// For each update, it's just the index from getFrom()..getTo() + indexOffset
+				for (int indexOffset: offsets) {
+					for (int i = change.getFrom(); i < change.getTo(); ++i) {
+						nextUpdate(i + indexOffset);
+					}
+				}
 			} else if (change.wasAdded()) {
-				nextAdd(change.getFrom()+indexOffset, change.getTo()+indexOffset);
-			} else
-				nextRemove(change.getFrom()+indexOffset, change.getRemoved());
+
+				// Each Add is just from() + the offset
+				for (int indexOffset: offsets) {
+					nextAdd(change.getFrom() + indexOffset, change.getTo() + indexOffset);
+				}
+
+			} else {
+				// Each remove is indexed
+				for (int indexOffset: offsets) {
+					nextRemove(change.getFrom() + indexOffset, change.getRemoved());
+				}
+			}
 		}
 		endChange();
 	}
@@ -86,6 +121,6 @@ class ConcatList<E> extends ObservableListBase<E> {
 
 	@Override
 	public int size() {
-		return sourceLists.stream().mapToInt(ObservableList<? extends E>::size).sum();
+		return sourceLists.stream().mapToInt(ObservableList::size).sum();
 	}
 }
