@@ -1,20 +1,17 @@
 package org.fxmisc.easybind;
 
-import static org.junit.Assert.*;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
+
+import static org.junit.Assert.*;
 
 public class ConcatListTest {
 
@@ -28,7 +25,7 @@ public class ConcatListTest {
 			actualChange(c);
 		}
 
-		public int getCallCount() {
+		int getCallCount() {
 			return callCount;
 		}
 
