@@ -78,7 +78,7 @@ ObservableList<String> tabIds = EasyBind.map(tabPane.getTabs(), Tab::getId);
 
 In the above example, `tabIds` is updated as tabs are added and removed from `tabPane`.
 
-An equivalent feature has been requested in [RT-35741](https://javafx-jira.kenai.com/browse/RT-35741) and is scheduled for JavaFX 9.
+An equivalent feature has been requested in [JDK-8091967](https://bugs.openjdk.java.net/browse/JDK-8091967) and is scheduled for a future JavaFX release.
 
 
 ### combine list
