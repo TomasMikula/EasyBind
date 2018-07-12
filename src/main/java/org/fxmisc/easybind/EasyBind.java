@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
@@ -114,6 +115,16 @@ public class EasyBind {
             ObservableList<? extends T> sourceList,
             Function<? super T, ? extends U> f) {
         return new MappedList<>(sourceList, f);
+    }
+
+    public static <T> ObservableList<T> flatten(
+            ObservableList<ObservableList<? extends T>> sources) {
+        return new FlattenedList<>(sources);
+    }
+
+    public static <T> ObservableList<T> flatten(
+            ObservableList<? extends T>... sources) {
+        return new FlattenedList<>(FXCollections.observableArrayList(sources));
     }
 
     public static <A, B, R> MonadicBinding<R> combine(
