@@ -1,7 +1,9 @@
 package org.fxmisc.easybind;
 
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import javafx.collections.ListChangeListener.Change;
@@ -11,6 +13,7 @@ import javafx.collections.transformation.TransformationList;
 class MappedList<E, F> extends TransformationList<E, F> {
 
     private final Function<? super F, ? extends E> mapper;
+    private final Map<F, E> map = new IdentityHashMap<>();
 
     public MappedList(ObservableList<? extends F> source, Function<? super F, ? extends E> mapper) {
         super(source);
@@ -24,7 +27,7 @@ class MappedList<E, F> extends TransformationList<E, F> {
 
     @Override
     public E get(int index) {
-        return mapper.apply(getSource().get(index));
+        return map.computeIfAbsent(getSource().get(index), mapper::apply);
     }
 
     @Override
@@ -79,7 +82,7 @@ class MappedList<E, F> extends TransformationList<E, F> {
             public List<E> getRemoved() {
                 ArrayList<E> res = new ArrayList<>(c.getRemovedSize());
                 for(F e: c.getRemoved()) {
-                    res.add(mapper.apply(e));
+                    res.add(map.getOrDefault(e, mapper.apply(e)));
                 }
                 return res;
             }
@@ -104,5 +107,10 @@ class MappedList<E, F> extends TransformationList<E, F> {
                 c.reset();
             }
         });
+
+        c.reset();
+        while (c.next()) {
+            c.getRemoved().forEach(map::remove);
+        }
     }
 }
